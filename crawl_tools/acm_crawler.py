@@ -137,6 +137,25 @@ class ACMCrawler:
         
         return all_combinations
     
+    def _handle_cookie_dialog(self, page):
+        """Handle cookie consent dialog if it appears."""
+        try:
+            # Wait a bit for the dialog to appear
+            time.sleep(2)
+            
+            # Try to find and click the decline button
+            decline_button = page.ele('css:#CybotCookiebotDialogBodyButtonDecline')
+            if decline_button:
+                print("🍪 Found cookie dialog, clicking decline...")
+                decline_button.click()
+                time.sleep(1)
+                print("✅ Cookie dialog handled")
+            else:
+                print("ℹ️ No cookie dialog found")
+                
+        except Exception as e:
+            print(f"⚠️ Error handling cookie dialog: {e}")
+
     def crawl_links_by_keyword(self, keyword: str, browser=None) -> List[str]:
         """
         Crawl paper links from ACM Digital Library for a given keyword.
@@ -161,6 +180,10 @@ class ACMCrawler:
             print(f"Searching: {search_url}")
             
             page.get(search_url)
+            
+            # Handle cookie dialog first
+            self._handle_cookie_dialog(page)
+            
             time.sleep(2)
             cnt = 1
             base_url = "https://dl.acm.org"

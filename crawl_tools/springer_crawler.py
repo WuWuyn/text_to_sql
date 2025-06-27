@@ -141,6 +141,25 @@ class SpringerCrawler:
         
         return all_combinations
     
+    def _handle_cookie_dialog(self, page):
+        """Handle cookie consent dialog if it appears."""
+        try:
+            # Wait a bit for the dialog to appear
+            time.sleep(2)
+            
+            # Try to find and click the accept cookies button
+            accept_button = page.ele('css:button[data-cc-action="accept"]')
+            if accept_button:
+                print("🍪 Found cookie dialog, clicking accept...")
+                accept_button.click()
+                time.sleep(1)
+                print("✅ Cookie dialog handled")
+            else:
+                print("ℹ️ No cookie dialog found")
+                
+        except Exception as e:
+            print(f"⚠️ Error handling cookie dialog: {e}")
+    
     def crawl_links_by_keyword(self, keyword: str, browser=None) -> List[str]:
         """
         Crawl paper links from Springer for a given keyword.
@@ -165,6 +184,10 @@ class SpringerCrawler:
             print(f"Searching: {search_url}")
             
             page.get(search_url)
+            
+            # Handle cookie dialog first
+            self._handle_cookie_dialog(page)
+            
             time.sleep(2)
             cnt = 1
 

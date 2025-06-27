@@ -109,7 +109,7 @@ class IEEECrawler:
         combinations = itertools.product(*sets)
         return [' AND '.join(combo) for combo in combinations]
     
-    def generate_all_combinations(self, keyword_sets=None, primary_key='t2sql'):
+    def generate_all_combinations(self, keyword_sets=None, primary_key='llm'):
         """
         Tạo danh sách tất cả các tổ hợp từ khóa theo các trường hợp yêu cầu.
         
@@ -550,7 +550,7 @@ def main():
     
     # Define keyword sets as dictionary - easy to extend with new categories
     keyword_sets = {
-        't2sql': [
+        'functional testing': [
              '"text2sql"'] 
         #      '"natural language to sql"', '"semantic parsing to sql"', '"nl to sql"'
         #  ],

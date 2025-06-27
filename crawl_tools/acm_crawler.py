@@ -104,7 +104,7 @@ class ACMCrawler:
         combinations = itertools.product(*sets)
         return [' AND '.join(combo) for combo in combinations]
     
-    def generate_all_combinations(self, keyword_sets=None, primary_key='t2sql'):
+    def generate_all_combinations(self, keyword_sets=None, primary_key='llm'):
         """Generate all keyword combinations."""
         keyword_sets = keyword_sets or self.keyword_sets
         

@@ -1,32 +1,41 @@
 import pandas as pd
 from fuzzywuzzy import fuzz
 import re
-from nltk import sent_tokenize
-from nltk import ngrams
 from joblib import Parallel, delayed
 import os
 
 class KeywordFilter:
     def __init__(self):
-        """Initialize the KeywordFilter class."""
+        """Initialize the KeywordFilter class without NLTK dependency."""
         # Define default keyword groups
         self.text_to_sql_keywords = [
-            "text-to-sql", "nl2sql", "t2sql", "text2sql", 
-            "natural language to sql", "semantic parsing to sql", "nl to sql"
+            "Software Testing", "Testing", "Test Automation", "Test Case Generation",
+            "Test Script Generation", "Test Data Generation", "Test Oracle Generation", "Test Repair"
         ]
         self.security_keywords = [
-            "security", "access control", "injection", "prompt injection", 
-            "defense", "attack", "vulnerability"
+            "Functional Testing", "System Testing", "End-to-End Testing", "GUI Testing", 
+            "UI Testing", "Web Testing", "Mobile Testing", "Agent", "AI Agent", 
+            "Autonomous Agent", "Prompt Engineering", "Chain-of-Thought", "Retrieval-Augmented Generation"
         ]
         self.llm_keywords = ["llm", "large language model"]
+        print("KeywordFilter initialized. Using built-in sentence tokenizer and n-gram generator.")
+
+    def tokenize_sentences(self, text):
+        """
+        Simple sentence tokenizer using regex.
         
-        # Ensure NLTK data is available
-        try:
-            sent_tokenize("Test sentence.")
-        except LookupError:
-            import nltk
-            nltk.download('punkt')
-    
+        Args:
+            text (str): Text to tokenize
+            
+        Returns:
+            list: List of sentences
+        """
+        if not isinstance(text, str):
+            return []
+        # Simple regex to split on sentence boundaries (. ! ?)
+        sentences = re.split(r'(?<=[.!?])\s+', text)
+        return [s.strip() for s in sentences if s.strip()]
+
     def set_keywords(self, t2sql_keywords=None, security_keywords=None, llm_keywords=None):
         """
         Set custom keywords for each category.
@@ -64,17 +73,23 @@ class KeywordFilter:
     
     def generate_ngrams(self, text, n):
         """
-        Generate n-grams from the text.
+        Generate n-grams from the text using pure Python.
         
         Args:
             text (str): Text to generate n-grams from
             n (int): Size of n-grams
             
         Returns:
-            list: List of n-grams
+            list: List of n-grams as strings
         """
         words = text.split()
-        return [' '.join(gram) for gram in ngrams(words, n)]
+        # Ensure there are enough words to create an n-gram
+        if len(words) < n:
+            return []
+        
+        # Use zip to create n-grams efficiently
+        ngrams_tuples = zip(*(words[i:] for i in range(n)))
+        return [' '.join(gram) for gram in ngrams_tuples]
     
     def check_group(self, sentences, keywords, threshold=90):
         """
@@ -90,15 +105,20 @@ class KeywordFilter:
         """
         all_ngrams = []
         for sentence in sentences:
+            preprocessed_sentence = self.preprocess_text(sentence)
             for n in range(1, 5):  # From 1-gram to 4-gram
-                all_ngrams.extend(self.generate_ngrams(sentence, n))
+                all_ngrams.extend(self.generate_ngrams(preprocessed_sentence, n))
         
-        for keyword in keywords:
+        # Preprocess keywords once to avoid redundant work
+        processed_keywords = [self.preprocess_text(k) for k in keywords]
+
+        for keyword in processed_keywords:
             for ngram in all_ngrams:
                 if fuzz.WRatio(keyword, ngram) > threshold:
                     return True
+            # Also check against the full sentences for broader context matches
             for sentence in sentences:
-                if fuzz.WRatio(keyword, sentence) > threshold:
+                if fuzz.WRatio(keyword, self.preprocess_text(sentence)) > threshold:
                     return True
         return False
     
@@ -110,21 +130,21 @@ class KeywordFilter:
             abstract (str): Abstract text to classify
             
         Returns:
-            list: List of boolean values [t2sql_result, security_result, llm_result]
+            list: List of boolean values [functional_testing_result, functional_result, llm_result]
         """
-        abstract = self.preprocess_text(abstract)
-        sentences = sent_tokenize(abstract)
+        # We don't need to preprocess here, as check_group handles it internally
+        sentences = self.tokenize_sentences(abstract)
         
-        t2sql_result = self.check_group(sentences, self.text_to_sql_keywords)
-        security_result = self.check_group(sentences, self.security_keywords)
+        functional_testing_result = self.check_group(sentences, self.text_to_sql_keywords)
+        functional_result = self.check_group(sentences, self.security_keywords)
         llm_result = self.check_group(sentences, self.llm_keywords)
         
-        return [t2sql_result, security_result, llm_result]
+        return [functional_testing_result, functional_result, llm_result]
     
-    def process_csv(self, input_csv, output_csv=None):
+    def process_csv(self, input_csv, output_csv):
         """
         Read a CSV file, classify each abstract with parallel processing,
-        and add 3 new boolean columns: t2sql, security, llm.
+        and add 3 new boolean columns: functional_testing, functional, llm.
         
         Args:
             input_csv (str): Path to input CSV file
@@ -138,24 +158,33 @@ class KeywordFilter:
         if 'abstract' not in df.columns:
             raise ValueError("CSV file must contain an 'abstract' column.")
         
-        df['abstract'] = df['abstract'].astype(str)
+        df['abstract'] = df['abstract'].fillna('').astype(str) # Handle missing abstracts
         classifications = Parallel(n_jobs=-1)(delayed(self.classify_abstract)(abstract) for abstract in df['abstract'])
         
-        df['t2sql'] = [result[0] for result in classifications]
-        df['security'] = [result[1] for result in classifications]
+        df['t2sql'] = [result[0] for result in classifications]  # Keep old column name for compatibility
+        df['security'] = [result[1] for result in classifications]  # Keep old column name for compatibility 
         df['llm'] = [result[2] for result in classifications]
         
+        # Add new column names
+        df['functional_testing'] = df['t2sql']
+        df['functional'] = df['security']
+        
         if 'submitted' in df.columns:
-            df['submitted'] = pd.to_datetime(df['submitted'])
+            df['submitted'] = pd.to_datetime(df['submitted'], errors='coerce')
             df = df.sort_values(by='submitted', ascending=False)
 
         if output_csv:
             # Ensure directory exists
-            os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+            output_dir = os.path.dirname(output_csv)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
             df.to_csv(output_csv, index=False)
         
         return df
     
+    # The generate_keyword_summaries and run_pipeline methods remain the same
+    # as they do not depend on NLTK. For completeness, they are included below.
+
     def generate_keyword_summaries(self, df, output_dir):
         """
         Generate summary CSV files for different keyword combinations.
@@ -177,29 +206,29 @@ class KeywordFilter:
             all_true_df = all_true_df.sort_values(by='submitted', ascending=False)
         all_true_df.to_csv(f"{output_dir}/all_true.csv", index=False)
         
-        # 2. Papers with t2sql and llm keywords
-        t2sql_llm_true_df = df[(df['t2sql'] == True) & (df['llm'] == True)].copy()
-        if 'submitted' in t2sql_llm_true_df.columns:
-            t2sql_llm_true_df['submitted'] = pd.to_datetime(t2sql_llm_true_df['submitted'])
-            t2sql_llm_true_df = t2sql_llm_true_df.sort_values(by='submitted', ascending=False)
-        t2sql_llm_true_df.to_csv(f"{output_dir}/t2sql_llm_true.csv", index=False)
+        # 2. Papers with functional_testing and llm keywords
+        functional_testing_llm_true_df = df[(df['t2sql'] == True) & (df['llm'] == True)].copy()
+        if 'submitted' in functional_testing_llm_true_df.columns:
+            functional_testing_llm_true_df['submitted'] = pd.to_datetime(functional_testing_llm_true_df['submitted'])
+            functional_testing_llm_true_df = functional_testing_llm_true_df.sort_values(by='submitted', ascending=False)
+        functional_testing_llm_true_df.to_csv(f"{output_dir}/functional_testing_llm_true.csv", index=False)
         
-        # 3. Papers with t2sql and security keywords
-        t2sql_security_true_df = df[(df['t2sql'] == True) & (df['security'] == True)].copy()
-        if 'submitted' in t2sql_security_true_df.columns:
-            t2sql_security_true_df['submitted'] = pd.to_datetime(t2sql_security_true_df['submitted'])
-            t2sql_security_true_df = t2sql_security_true_df.sort_values(by='submitted', ascending=False)
-        t2sql_security_true_df.to_csv(f"{output_dir}/t2sql_security_true.csv", index=False)
+        # 3. Papers with functional_testing and functional keywords
+        functional_testing_functional_true_df = df[(df['t2sql'] == True) & (df['security'] == True)].copy()
+        if 'submitted' in functional_testing_functional_true_df.columns:
+            functional_testing_functional_true_df['submitted'] = pd.to_datetime(functional_testing_functional_true_df['submitted'])
+            functional_testing_functional_true_df = functional_testing_functional_true_df.sort_values(by='submitted', ascending=False)
+        functional_testing_functional_true_df.to_csv(f"{output_dir}/functional_testing_functional_true.csv", index=False)
         
         # 4. Merge all results and remove duplicates
-        merged_df = pd.concat([all_true_df, t2sql_llm_true_df, t2sql_security_true_df], ignore_index=True)
+        merged_df = pd.concat([all_true_df, functional_testing_llm_true_df, functional_testing_functional_true_df], ignore_index=True)
         merged_df = merged_df.drop_duplicates()
         merged_df.to_csv(f"{output_dir}/merged_keyword_results.csv", index=False)
         
         return {
             'all_true': all_true_df,
-            't2sql_llm_true': t2sql_llm_true_df,
-            't2sql_security_true': t2sql_security_true_df,
+            'functional_testing_llm_true': functional_testing_llm_true_df,
+            'functional_testing_functional_true': functional_testing_functional_true_df,
             'merged': merged_df
         }
     
@@ -228,8 +257,8 @@ class KeywordFilter:
         
         print(f"Total papers: {len(processed_df)}")
         print(f"Papers with all keywords: {len(summaries['all_true'])}")
-        print(f"Papers with t2sql and llm: {len(summaries['t2sql_llm_true'])}")
-        print(f"Papers with t2sql and security: {len(summaries['t2sql_security_true'])}")
+        print(f"Papers with functional_testing and llm: {len(summaries['functional_testing_llm_true'])}")
+        print(f"Papers with functional_testing and functional: {len(summaries['functional_testing_functional_true'])}")
         print(f"Total unique papers in merged results: {len(summaries['merged'])}")
         
         return summaries
@@ -238,10 +267,24 @@ class KeywordFilter:
 # Example usage
 if __name__ == "__main__":
     filter_tool = KeywordFilter()
-    
     # Example: Process a CSV file and generate summaries
     type_name = "arxiv"
-    input_csv = f"../raw_crawl_papers/date_processed/{type_name}_papers.csv"
-    output_dir = f"../keywords_summary/{type_name}"
+    # Create a dummy CSV for testing if it doesn't exist
+    input_csv_path = f"crawl_results/arxiv/all_arxiv_papers.csv"
+    if not os.path.exists(input_csv_path):
+        print(f"Creating a dummy input file at: {input_csv_path}")
+        os.makedirs(os.path.dirname(input_csv_path), exist_ok=True)
+        dummy_data = {
+            'title': ['Paper on LLM Test Generation', 'Paper on Web Testing', 'Another Paper'],
+            'abstract': [
+                'This paper discusses using a large language model (llm) for test case generation. Software testing is critical.',
+                'We explore functional testing and GUI testing for web applications. Our new AI agent helps automate the process.',
+                'This research focuses on neural networks for image classification.'
+            ],
+            'submitted': ['2023-10-26', '2023-10-25', '2023-10-24']
+        }
+        pd.DataFrame(dummy_data).to_csv(input_csv_path, index=False)
+
+    output_dir = f"keywords_summary/{type_name}"
     
-    summaries = filter_tool.run_pipeline(input_csv, output_dir) 
+    summaries = filter_tool.run_pipeline(input_csv_path, output_dir)

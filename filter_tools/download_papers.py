@@ -4,7 +4,7 @@ from DrissionPage import SessionPage
 import os
 
 class PaperDownloader:
-    def __init__(self, output_dir="arxiv"):
+    def __init__(self, output_dir):
         """
         Initialize the PaperDownloader class.
         
@@ -19,7 +19,7 @@ class PaperDownloader:
             os.makedirs(output_dir)
             print(f"Created directory: {output_dir}")
     
-    def filter_papers_by_date(self, input_csv, output_csv=None, start_date="2023-01-01", end_date=None):
+    def filter_papers_by_date(self, input_csv, output_csv=None, start_date="2024-01-01", end_date=None):
         """
         Filter papers by date range.
         
@@ -106,7 +106,7 @@ class PaperDownloader:
 
 # Example usage
 if __name__ == "__main__":
-    downloader = PaperDownloader(output_dir="arxiv")
+    downloader = PaperDownloader(output_dir="")
     
     # Example: Filter papers from a CSV file and download them
     filtered_papers, results = downloader.run_pipeline(

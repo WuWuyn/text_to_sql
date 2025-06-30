@@ -105,7 +105,16 @@ class ACMCrawler:
         return [' AND '.join(combo) for combo in combinations]
     
     def generate_all_combinations(self, keyword_sets=None, primary_key='llm'):
-        """Generate all keyword combinations."""
+        """
+        Generate all keyword combinations between primary key and other categories.
+        
+        Args:
+            keyword_sets (dict): Dictionary of keyword sets
+            primary_key (str): Primary key to combine with other categories
+            
+        Returns:
+            list: List of keyword combination strings
+        """
         keyword_sets = keyword_sets or self.keyword_sets
         
         if not keyword_sets or primary_key not in keyword_sets:
@@ -118,8 +127,13 @@ class ACMCrawler:
         other_categories = {k: v for k, v in keyword_sets.items() 
                           if k != primary_key and v}
         
+        # Validate there's at least one other category
+        if not other_categories:
+            raise ValueError(f"At least one category besides '{primary_key}' is needed for combinations")
+        
         cases = []
-        cases.append([primary_keywords])
+        # No longer adding primary keywords alone
+        # cases.append([primary_keywords])
         
         from itertools import combinations
         category_names = list(other_categories.keys())

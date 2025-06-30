@@ -348,6 +348,7 @@ class ContentAnalyzer:
             print(f"JSON file already exists for {pdf_path}, skipping...")
             return json_path
         
+        
         try:
             # Extract text from PDF
             text = self.extract_text_from_pdf(pdf_path)

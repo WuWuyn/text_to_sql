@@ -107,7 +107,16 @@ class ArxivCrawler:
         return [' AND '.join(combo) for combo in combinations]
     
     def generate_all_combinations(self, keyword_sets=None, primary_key='llm'):
-        """Generate all keyword combinations."""
+        """
+        Generate all keyword combinations between primary key and other categories.
+        
+        Args:
+            keyword_sets (dict): Dictionary of keyword sets
+            primary_key (str): Primary key to combine with other categories
+            
+        Returns:
+            list: List of keyword combination strings
+        """
         keyword_sets = keyword_sets or self.keyword_sets
         
         if not keyword_sets or primary_key not in keyword_sets:
@@ -120,12 +129,17 @@ class ArxivCrawler:
         other_categories = {k: v for k, v in keyword_sets.items() 
                           if k != primary_key and v}
         
+        if not other_categories:
+            raise ValueError(f"At least one category besides '{primary_key}' is needed for combinations")
+        
         cases = []
-        cases.append([primary_keywords])
+        # No longer adding primary keywords alone
+        # cases.append([primary_keywords])
         
         from itertools import combinations
         category_names = list(other_categories.keys())
         
+        # Generate combinations with at least one other category
         for r in range(1, len(category_names) + 1):
             for category_combo in combinations(category_names, r):
                 case = [primary_keywords]
@@ -137,6 +151,7 @@ class ArxivCrawler:
         for case in cases:
             all_combinations.extend(self.combination_keywords(case))
         
+        print(f"Generated {len(all_combinations)} keyword combinations")
         return all_combinations
     
     def extract_paper_details(self, result) -> Dict:

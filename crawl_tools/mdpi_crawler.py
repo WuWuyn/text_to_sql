@@ -137,11 +137,15 @@ class MDPICrawler:
         other_categories = {k: v for k, v in keyword_sets.items() 
                           if k != primary_key and v}  # Only non-empty lists
         
+        # Validate there's at least one other category
+        if not other_categories:
+            raise ValueError(f"At least one category besides '{primary_key}' is needed for combinations")
+        
         # Generate all possible combinations
         cases = []
         
-        # Always include primary keywords only
-        cases.append([primary_keywords])
+        # No longer include primary keywords only
+        # cases.append([primary_keywords])
         
         # Generate combinations with other categories
         # Use itertools to generate all possible combinations of additional categories

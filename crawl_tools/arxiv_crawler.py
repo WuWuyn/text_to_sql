@@ -108,7 +108,7 @@ class ArxivCrawler:
     
     def generate_all_combinations(self, keyword_sets=None, primary_key='llm'):
         """
-        Generate all keyword combinations between primary key and other categories.
+        Generate keyword combinations that include keywords from all three groups.
         
         Args:
             keyword_sets (dict): Dictionary of keyword sets
@@ -129,23 +129,21 @@ class ArxivCrawler:
         other_categories = {k: v for k, v in keyword_sets.items() 
                           if k != primary_key and v}
         
-        if not other_categories:
-            raise ValueError(f"At least one category besides '{primary_key}' is needed for combinations")
+        if len(other_categories) < 2:
+            raise ValueError(f"At least two other categories besides '{primary_key}' are needed for combinations")
         
         cases = []
-        # No longer adding primary keywords alone
-        # cases.append([primary_keywords])
         
+        # Generate combinations that include ALL three keyword groups
         from itertools import combinations
         category_names = list(other_categories.keys())
         
-        # Generate combinations with at least one other category
-        for r in range(1, len(category_names) + 1):
-            for category_combo in combinations(category_names, r):
-                case = [primary_keywords]
-                for category in category_combo:
-                    case.append(other_categories[category])
-                cases.append(case)
+        # Instead of looping through different r values, only use r=2 to get exactly 2 other categories
+        for category_combo in combinations(category_names, 2):
+            case = [primary_keywords]
+            for category in category_combo:
+                case.append(other_categories[category])
+            cases.append(case)
         
         all_combinations = []
         for case in cases:
@@ -187,9 +185,22 @@ class ArxivCrawler:
             if abstract and "△ Less" in abstract:
                 abstract = abstract.split("△ Less")[0].strip()
 
-            # Extract submitted date
-            submitted_element = result.ele('css:p.is-size-7')
-            submitted = submitted_element.text.strip() if submitted_element else None
+            # Extract submitted date - Fixed based on the image
+            date_container = result.ele('css:p.is-size-7')
+            submitted = None
+            
+            if date_container:
+                # Look for the span with the specific class that contains "Submitted:"
+                date_span = date_container.ele('css:span.has-text-black-bis.has-text-weight-semibold')
+                if date_span and "Submitted" in date_span.text:
+                    # Get the text content after the span which contains the actual date
+                    submitted_text = date_container.text
+                    # Extract the date part (typically follows "Submitted:" text)
+                    if "Submitted:" in submitted_text:
+                        submitted = submitted_text.split("Submitted:")[1].strip()
+                    elif ";" in submitted_text:
+                        # Alternative format where date might follow a semicolon
+                        submitted = submitted_text.split(";")[1].strip()
 
             return {
                 'link': link,

@@ -113,7 +113,7 @@ class MDPICrawler:
     
     def generate_all_combinations(self, keyword_sets=None, primary_key='llm'):
         """
-        Tạo danh sách tất cả các tổ hợp từ khóa theo các trường hợp yêu cầu.
+        Generate keyword combinations that include keywords from all three groups.
         
         Args:
             keyword_sets (dict): Dictionary of keyword sets (uses instance keyword_sets if None)
@@ -137,15 +137,12 @@ class MDPICrawler:
         other_categories = {k: v for k, v in keyword_sets.items() 
                           if k != primary_key and v}  # Only non-empty lists
         
-        # Validate there's at least one other category
-        if not other_categories:
-            raise ValueError(f"At least one category besides '{primary_key}' is needed for combinations")
+        # Validate there's at least two other categories
+        if len(other_categories) < 2:
+            raise ValueError(f"At least two other categories besides '{primary_key}' are needed for combinations")
         
         # Generate all possible combinations
         cases = []
-        
-        # No longer include primary keywords only
-        # cases.append([primary_keywords])
         
         # Generate combinations with other categories
         # Use itertools to generate all possible combinations of additional categories
@@ -153,14 +150,13 @@ class MDPICrawler:
         
         category_names = list(other_categories.keys())
         
-        # For each possible size of combination (1 to all categories)
-        for r in range(1, len(category_names) + 1):
-            for category_combo in combinations(category_names, r):
-                # Create case with primary + selected categories
-                case = [primary_keywords]
-                for category in category_combo:
-                    case.append(other_categories[category])
-                cases.append(case)
+        # Instead of looping through different r values, only use r=2 to get exactly 2 other categories
+        for category_combo in combinations(category_names, 2):
+            # Create case with primary + selected categories
+            case = [primary_keywords]
+            for category in category_combo:
+                case.append(other_categories[category])
+            cases.append(case)
         
         # Tạo và hợp nhất tất cả các tổ hợp
         all_combinations = []

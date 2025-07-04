@@ -1,0 +1,171 @@
+{
+  "paper_metadata": {
+    "filename": "A Case Study on Test Case Construction with Large Language Models_ Unveiling Practical Insights and ",
+    "title": "A Case Study on Test Case Construction with Large Language Models  Unveiling Practical Insights and ",
+    "producer": "pdfTeX-1.40.25"
+  },
+  "pdf_path": "filtered_papers\\downloaded_papers\\2023_papers\\A Case Study on Test Case Construction with Large Language Models_ Unveiling Practical Insights and .pdf",
+  "assessment": {
+    "quality_assessment": {
+      "QQ1_Research_Objective": {
+        "score": "Yes",
+        "clarity": "Explicit in abstract/introduction",
+        "relevance_to_functional_testing": "Direct",
+        "evidence": "Abstract: \"This paper presents a detailed case study examining the application of Large Language Models (LLMs) in the construction of test cases within the context of software engineering...aiming to shed light on their practical efficacy, challenges encountered, and implications for software quality assurance.\" Introduction: \"This paper addresses the intersection of LLMs and software testing, focusing specifically on their role in the construction of test cases.\""
+      },
+      "QQ2_Method_Description": {
+        "score": "Yes",
+        "architecture_diagram": "Presence and clear",
+        "stepwise_explanation": "Detailed procedural steps",
+        "component_details": "Well-described",
+        "reproducibility": "Could be reproduced from description",
+        "evidence": "Section 3 'Approach' details the 'semi-automated test cases constructions and the evaluation framework'. Figure 1 'The workflow for building test cases using a Large Language Model' provides an overview. Subsections 3.1.1 'Application Description' and 3.1.2 'Prompt Design' provide detailed steps and components: \"interactive method was designed to extract test cases from the model\", \"OpenAI API was used with the GPT-3.5 Turbo model together with the Python framework LangChain\". Prompt design steps like 'Requirements', 'Test Conditions', 'Test Cases' tasks are described. Table 2 outlines the evaluation process step-by-step."
+      },
+      "QQ3_Research_Context": {
+        "score": "Yes",
+        "application_type": "Web",
+        "programming_language": "Python",
+        "frameworks_tools": "LangChain, OpenAI API, GPT-3.5 Turbo, Google Forms",
+        "dataset_details": "A real-world web application named Da.tes: \"a real-world application in active production, Da.tes [CESAR, 2023], was deliberately chosen for study. Da.tes stands as a web platform designed to create opportunities connecting startups, investors and business...\"",
+        "evidence": "Section 3.1: \"The OpenAI API was used with the GPT-3.5 Turbo model [OpenAI, 2023] together with the Python framework LangChain [LangChain, 2023]\". Section 3.2: \"a real-world application in active production, Da.tes [CESAR, 2023], was deliberately chosen for study. Da.tes stands as a web platform designed to create opportunities connecting startups, investors and business in a agile and precise way, with the purpose to provide, expand and materialize the opportunities to transform organizations and people’s lives.\" Google Forms were used for evaluation: \"create 2 Google Forms with questions evaluating 10 AI generated test cases along with 10 test cases manually written by a QA team\"."
+      },
+      "QQ4_Evaluation_Design": {
+        "score": "Yes",
+        "evaluation_type": "Case Study, Empirical Evaluation",
+        "benchmark_selection": "Justified (real-world application with diverse features)",
+        "experiment_procedure": "Detailed steps",
+        "repeatability": "Could be repeated with caveats (e.g., prompt design iterations mentioned, volunteer selection)",
+        "evidence": "Abstract: \"Leveraging a case study methodology\". Section 3.2: \"To comprehensively assess test case generation, a real-world application in active production, Da.tes [CESAR, 2023], was deliberately chosen for study.\" Table 2: 'Description of AI generated test cases evaluation process step by step' provides detailed procedures for generating and evaluating test cases using human QA engineers and Google Forms."
+      },
+      "QQ5_Metrics": {
+        "score": "Yes",
+        "metrics_listed": [
+          "Correctness",
+          "Completeness",
+          "Consistency",
+          "Clarity",
+          "Understandable",
+          "Self-contained",
+          "Specific"
+        ],
+        "metrics_defined": "Most relevant metrics (Correctness, Completeness, Consistency) are explicitly defined. Others are listed as 'documentation quality sub-factors'.",
+        "metrics_relevance": "Directly relevant to research questions and test case quality assessment.",
+        "quantitative_metrics": "Presence",
+        "qualitative_metrics": "Presence",
+        "evidence": "Section 3.2: \"All the quality factors chosen to evaluate the test cases had to be based on their documentation quality sub-factors like Clarity, Correctness, Completeness, Consistency, Understandable, Self-contained and Specific.\" \"prioritize the most critical quality factors, that according to [Lai, 2017] were Correctness, Completeness and Consistency.\" Table 1 defines quantitative scores (1-5). Section 4 mentions qualitative feedback: \"a justification field where they were able to provide insights why test A or B was chosen.\""
+      },
+      "QQ6_Baseline_Comparison": {
+        "score": "Yes",
+        "comparison_type": "Against human-generated artifacts",
+        "baseline_names": [
+          "Manually written test cases by a QA team"
+        ],
+        "baseline_strength": "Strong (real-world, expert-generated)",
+        "statistical_significance": "Not explicitly calculated with tests, only averages",
+        "evidence": "Section 3.2: \"evaluating 10 AI generated test cases along with 10 test cases manually written by a QA team.\" Section 4: \"To avoid sampling bias it was calculated the average score for each group (AI and Human). While the IA generated tests average score was 4.31, the average result for humans was 4.18.\""
+      },
+      "QQ7_Results_Presentation": {
+        "score": "Yes",
+        "results_format": "Tables, Figures, Text",
+        "clarity": "Clear",
+        "conclusion_support": "Well supported",
+        "key_findings": "Summary of main results provided",
+        "evidence": "Section 4 'Results and Discussions' presents findings. Table 1 defines scores. Figure 2 is a 'Chart comparing the average rate for AI and Human test cases group split by quality factors'. Figure 3 is a 'Chart comparing the pick rate for AI and Human test cases in the A/B test'. Text elaborates on the findings for Correctness, Consistency, and Completeness, and A/B test results. Conclusion reiterates: \"in general the average between the scores indicates that both groups obtained similar results\"."
+      },
+      "QQ8_LLM_Integration": {
+        "score": "Yes",
+        "llm_role": "Core component (test case generation)",
+        "llm_models_used": [
+          "GPT-3.5 Turbo"
+        ],
+        "input_structure": "Structured prompt (template, role, previous output); separated into three parts",
+        "output_structure": "JSON format for intermediate steps, structured test case (title, preconditions, steps, expected results, test data, classification) in markdown for final output",
+        "prompt_engineering_details": "Detailed (template design, role prompting, multi-step reasoning - chain-of-thought, empirical testing of template)",
+        "fine_tuning_details": "Not applicable (used off-the-shelf model via API)",
+        "llm_limitations_addressed": "Yes (hallucinations, multi-feature handling)",
+        "evidence": "Section 3.1: \"prompt engineering was employed.\" \"The OpenAI API was used with the GPT-3.5 Turbo model\". Input: \"manual application description... predefined template... questions are presented in subsection 3.1.1.\" \"input for the model was separated into three parts, with each one complementing the other... Role Prompting\". Output: \"model should return the results in JSON format\", \"structured test case, containing title, preconditions, steps, expected results, test data and test classification... generate an output in markdown\". LLM limitations: \"preventing hallucinations [Lewis et al., 2021]\", Conclusion: \"the GPT3.5-Turbo could not handle many software features described on a single template, so it was observed that integration tests between two features could be a limitation of the current prompt design\"."
+      },
+      "QQ9_Research_Contribution": {
+        "score": "Yes",
+        "contribution_types": [
+          "Empirical",
+          "Practical"
+        ],
+        "novelty_level": "Incremental (application of existing techniques to under-explored practical context)",
+        "theoretical_contribution": "Minimal",
+        "practical_contribution": "Significant (insights into real-world LLM utility for test case construction, template design for practical use)",
+        "significance_for_field": "Important for practitioners and researchers considering LLM adoption in testing.",
+        "evidence": "Abstract: \"The findings from this case study contributes with nuanced insights into the practical utility of LLMs in the domain of test case construction, elucidating their potential benefits and limitations. By addressing real-world scenarios and complexities, this research aims to inform software practitioners and researchers alike about the tangible implications of incorporating LLMs into the software testing landscape.\" Introduction: \"This study seeks to bridge this gap by presenting a detailed case study that investigates the application of LLMs in constructing test cases for a real-world software application.\""
+      },
+      "QQ10_Limitations_Discussion": {
+        "score": "Yes",
+        "limitations_section": "Discussed within Conclusion section",
+        "limitations_categories": {
+          "dataset_limitations": [
+            "Small number of opinions/volunteers for evaluation"
+          ],
+          "methodology_limitations": [
+            "Semi-automated process depends on human input",
+            "Template development was iterative and empirical"
+          ],
+          "llm_specific_limitations": [
+            "Difficulty handling many software features in a single template",
+            "Challenges with integration tests requiring cross-feature dependency explanation",
+            "Potential for hallucinations if context not sufficiently provided"
+          ],
+          "generalizability_limitations": [
+            "Single case study"
+          ],
+          "evaluation_limitations": [
+            "Volunteers workload necessitated reduction of quality factors analyzed initially"
+          ]
+        },
+        "limitations_analysis_depth": "Adequate, with specific examples and future work directions.",
+        "threats_to_validity_categories": {
+          "internal_validity": "Partial (Implicitly addressed through structured evaluation, but no explicit discussion)",
+          "external_validity": "Discussed (Limited generalizability due to single case study and small sample size)",
+          "construct_validity": "Partial (Relies on human subjective evaluation scores)",
+          "conclusion_validity": "Partial (Acknowledged 'small numerical difference', 'small number of opinions', no statistical significance tests reported beyond averages)"
+        },
+        "evidence": "Conclusion (Section 5): \"although there is a small numerical difference in the evaluations of the volunteers in this study that could suggest an advantage of the test cases developed through an AI, in general the average between the scores indicates that both groups obtained similar results\". \"the process featured as “AI” is not completed automated since it depends on the human input\". \"the developed template was a build over many iterations\". \"the GPT3.5-Turbo could not handle many software features described on a single template, so it was observed that integration tests between two features could be a limitation of the current prompt design\". Section 4: \"In total it was possible to get only 7 responses for both forms and this result analysis will be held on this small number of opinions.\""
+      },
+      "QQ11_Future_Work": {
+        "score": "Yes",
+        "future_work_section": "Discussed within Conclusion section",
+        "future_work_categories": [
+          "Empirical studies",
+          "LLM capability extension"
+        ],
+        "research_directions": [
+          "Comparing Time, Cost, and Learning Curve for LLM vs. manual test case creation",
+          "Improving LLM handling of complex software features and integration tests"
+        ],
+        "implementation_suggestions": [],
+        "short_term_opportunities": [
+          "Exploring Time, Cost, Learning Curve comparisons"
+        ],
+        "long_term_vision": "Improving LLM integration for more complex testing scenarios.",
+        "evidence": "Conclusion (Section 5): \"As future directions – since the evaluation results were similar between the two groups of tests – it would be necessary to carry out additional studies comparing aspects such as Time, Cost and Learning Curve using LLMs to create test cases compared with manually creation.\". \"Also despite of the model work well with common features like login or sign up, the GPT3.5-Turbo could not handle many software features described on a single template, so it was observed that integration tests between two features could be a limitation of the current prompt design\"."
+      },
+      "QQ12_Input_Output_Definition": {
+        "score": "Partial",
+        "input_definition_clarity": "Clear",
+        "input_formats_described": [
+          "Template-based textual description"
+        ],
+        "output_definition_clarity": "Clear",
+        "output_formats_described": [
+          "JSON",
+          "Markdown (structured test case format)"
+        ],
+        "transformation_process_clarity": "Clear workflow presented (Figure 1 and textual description)",
+        "examples_provided": "No explicit examples of actual input/output content, but template questions are given.",
+        "edge_cases_discussed": "Briefly mentioned (difficulty with complex features, integration tests).",
+        "evidence": "Section 3.1.1 'Application Description' lists the questions in the input template: \"What is the software name?\", \"What is the software’s main purpose?\", \"What is the platform type?\", \"Feature description\". Section 3.1.2 'Prompt Design' describes outputs: \"model should return the results in JSON format\", \"structured test case, containing title, preconditions, steps, expected results, test data and test classification... in markdown\". Figure 1 illustrates the transformation process. Edge cases: Conclusion states \"the GPT3.5-Turbo could not handle many software features described on a single template, so it was observed that integration tests between two features could be a limitation\"."
+      }
+    }
+  },
+  "metadata": {
+    "assessed_at": "2025-07-04 14:36:00"
+  }
+}

@@ -5,6 +5,7 @@ from joblib import Parallel, delayed
 import os
 from collections import Counter
 import numpy as np
+from datetime import datetime
 from typing import Tuple,List, Dict, Any, Union, Optional
 
 class KeywordFilter:
@@ -43,6 +44,68 @@ class KeywordFilter:
         }
             
         print("KeywordFilter initialized. Using built-in sentence tokenizer and n-gram generator.")
+
+    def _clean_date_format(self, date_str):
+        """
+        Clean and standardize date format to help with parsing.
+        
+        Args:
+            date_str: Date string to clean
+            
+        Returns:
+            str: Cleaned date string or None if unparseable
+        """
+        if pd.isna(date_str) or not date_str:
+            return None
+            
+        # Convert to string if it's not already
+        date_str = str(date_str).strip()
+        
+        # Month name to number mapping
+        month_map = {
+            'january': '01', 'february': '02', 'march': '03', 'april': '04',
+            'may': '05', 'june': '06', 'july': '07', 'august': '08',
+            'september': '09', 'october': '10', 'november': '11', 'december': '12',
+            'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+            'jun': '06', 'jul': '07', 'aug': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+        }
+        
+        # Extract year
+        year_pattern = r'(19|20)\d{2}'
+        year_match = re.search(year_pattern, date_str)
+        if not year_match:
+            return None
+        
+        year = year_match.group(0)
+        
+        # Try to extract month and day
+        # Handle "originally announced Month Year" format
+        announced_pattern = r'originally announced (\w+)\s+\d{4}'
+        announced_match = re.search(announced_pattern, date_str.lower())
+        if announced_match:
+            month_name = announced_match.group(1).lower()
+            if month_name in month_map:
+                return f"{year}-{month_map[month_name]}-01"
+        
+        # Handle "v1 submitted DD Month, Year" format
+        submitted_pattern = r'submitted\s+(\d{1,2})\s+(\w+)[\s,]+\d{4}'
+        submitted_match = re.search(submitted_pattern, date_str.lower())
+        if submitted_match:
+            day = submitted_match.group(1).zfill(2)  # Pad single digit day with leading zero
+            month_name = submitted_match.group(2).lower()
+            if month_name in month_map:
+                return f"{year}-{month_map[month_name]}-{day}"
+        
+        # Handle "Month Year" format
+        month_year_pattern = r'(\w+)\s+\d{4}'
+        month_year_match = re.search(month_year_pattern, date_str.lower())
+        if month_year_match:
+            month_name = month_year_match.group(1).lower()
+            if month_name in month_map:
+                return f"{year}-{month_map[month_name]}-01"
+        
+        # Default: return year with first day
+        return f"{year}-01-01"
 
     def tokenize_sentences(self, text: str) -> List[str]:
         """
@@ -294,11 +357,23 @@ class KeywordFilter:
             sort_columns.append('relevance_score')
             
         if 'submitted' in df.columns:
-            df['submitted'] = pd.to_datetime(df['submitted'], errors='coerce')
-            sort_columns.append('submitted')
+            # Clean date formats first
+            df['cleaned_date'] = df['submitted'].apply(self._clean_date_format)
+            
+            # Convert cleaned dates to datetime objects
+            df['date_obj'] = pd.to_datetime(df['cleaned_date'], errors='coerce')
+            
+            # Use date_obj for sorting
+            sort_columns.append('date_obj')
             
         if sort_columns:
             df = df.sort_values(by=sort_columns, ascending=[False, False])
+            
+        # Remove temporary date columns before saving
+        if 'cleaned_date' in df.columns:
+            df = df.drop(columns=['cleaned_date'])
+        if 'date_obj' in df.columns:
+            df = df.drop(columns=['date_obj'])
 
         if output_csv:
             # Ensure directory exists
@@ -408,9 +483,16 @@ class KeywordFilter:
         for name, sum_df in summary_dfs.items():
             # Sort by relevance score and submission date if available
             if 'relevance_score' in sum_df.columns:
+                # Clean and parse dates for sorting
                 if 'submitted' in sum_df.columns:
-                    sum_df['submitted'] = pd.to_datetime(sum_df['submitted'], errors='coerce')
-                    sum_df = sum_df.sort_values(by=['relevance_score', 'submitted'], ascending=[False, False])
+                    sum_df['cleaned_date'] = sum_df['submitted'].apply(self._clean_date_format)
+                    sum_df['date_obj'] = pd.to_datetime(sum_df['cleaned_date'], errors='coerce')
+                    sum_df = sum_df.sort_values(by=['relevance_score', 'date_obj'], ascending=[False, False])
+                    # Remove temporary date columns
+                    if 'cleaned_date' in sum_df.columns:
+                        sum_df = sum_df.drop(columns=['cleaned_date'])
+                    if 'date_obj' in sum_df.columns:
+                        sum_df = sum_df.drop(columns=['date_obj'])
                 else:
                     sum_df = sum_df.sort_values(by='relevance_score', ascending=False)
                     
@@ -480,9 +562,6 @@ class KeywordFilter:
         
         return summaries
 
-
-# Add missing import
-from typing import Tuple
 
 # Example usage
 if __name__ == "__main__":

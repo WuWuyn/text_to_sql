@@ -1,0 +1,185 @@
+{
+  "paper_metadata": {
+    "filename": "AgentCoder_ Multi-Agent-based Code Generation with Iterative Testing and Optimisation",
+    "title": "AgentCoder  Multi-Agent-based Code Generation with Iterative Testing and Optimisation",
+    "producer": "pdfTeX-1.40.25"
+  },
+  "pdf_path": "filtered_papers\\downloaded_papers\\2023_papers\\AgentCoder_ Multi-Agent-based Code Generation with Iterative Testing and Optimisation.pdf",
+  "assessment": {
+    "quality_assessment": {
+      "QQ1_Research_Objective": {
+        "score": "Yes",
+        "clarity": "Explicit in abstract/introduction",
+        "relevance_to_functional_testing": "Direct",
+        "evidence": "Abstract: \"To address these issues, this paper introduces AgentCoder, a novel code generation solution comprising a multi-agent framework with a specialized test designer agents in addition to the programmer agent and the test executor agent.\" Introduction: \"To address the above-mentioned challenge, in this paper, we propose AgentCoder, a multi-agent code generation framework with effective test generation and small token overhead.\""
+      },
+      "QQ2_Method_Description": {
+        "score": "Yes",
+        "architecture_diagram": "Present and clear (Figure 1)",
+        "stepwise_explanation": "Comprehensive (Sections 3, 3.1, 3.2, 3.3)",
+        "component_details": "Detailed (Programmer, Test Designer, Test Executor agents)",
+        "reproducibility": "Yes",
+        "evidence": "The framework of AgentCoder and its pipeline are illustrated in Fig. 1. The process begins by inputting tasks/code generation requirements/descriptions into the code generation agent (Agent#1: the programmer agent). Subsequently, the test case generator (Agent#2: the test designer agent) is tasked with generating test cases... The test executor agent (Agent#3) is implemented through a Python script interacting with a local environment."
+      },
+      "QQ3_Research_Context": {
+        "score": "Yes",
+        "application_type": "Code Generation (General Software Development)",
+        "programming_language": "Python (implied by datasets and examples)",
+        "frameworks_tools": "LLMs (GPT-4, GPT-3.5-turbo, PaLM Coder, Claude-instant-1), Local Environment/Terminal",
+        "dataset_details": "HumanEval, MBPP, HumanEval-ET, MBPP-ET. Described as focusing on programming challenges and Python proficiency, and enhanced versions with more adequate test cases.",
+        "evidence": "We evaluate AgentCoder’s effectiveness with four widely used code generation datasets, i.e., HumanEval [6] and MBPP [2], and their enhanced versions, i.e., HumanEval-ET and MBPP-ET [10]... We study the effectiveness of AgentCoder powered by five state-of-the-art LLMs, including GPT-4, GPT-4-turbo, GPT-3.5-turbo, PaLM Coder, and Claude (Claude-instant-1). The test executor agent... is implemented through a Python script interacting with a local environment."
+      },
+      "QQ4_Evaluation_Design": {
+        "score": "Yes",
+        "evaluation_type": "Empirical Study",
+        "benchmark_selection": "Justified by being 'widely used' and 'more challenging' enhanced versions.",
+        "experiment_procedure": "Detailed, outlining LLMs and baselines used.",
+        "repeatability": "Yes (given access to LLMs and datasets mentioned)",
+        "evidence": "We use pass@1 as the evaluation metric for code correctness, the most widely adopted metric in the literature... We evaluate AgentCoder’s effectiveness with four widely used code generation datasets, i.e., HumanEval [6] and MBPP [2], and their enhanced versions... We compare AgentCoder with 12 Large Language Models (LLMs)... Additionally, we compare AgentCoder with 16 state-of-the-art (SOTA) code generation methods that are based on LLMs but with various optimisation strategies."
+      },
+      "QQ5_Metrics": {
+        "score": "Yes",
+        "metrics_listed": [
+          "pass@1",
+          "token overhead",
+          "test generation accuracy",
+          "code coverage (line coverage)"
+        ],
+        "metrics_defined": "Pass@1 is defined as 'the most widely adopted metric'. Others are implicitly understood or presented with values.",
+        "metrics_relevance": "Directly relevant to code generation effectiveness and efficiency.",
+        "quantitative_metrics": "Yes",
+        "qualitative_metrics": "No",
+        "evidence": "We use pass@1 as the evaluation metric for code correctness, the most widely adopted metric in the literature... For example, AgentCoder (GPT-4) achieves 96.3% and 91.8% pass@1 in HumanEval and MBPP datasets with an overall token overhead of 56.9K and 66.3K... our test designer agent achieves a test generation accuracy of 89.6% and 91.4%... In terms of code coverage, our test designer agent achieves a line coverage of 91.7%."
+      },
+      "QQ6_Baseline_Comparison": {
+        "score": "Yes",
+        "comparison_type": "Against state-of-the-art LLMs (zero-shot) and LLM-based optimization methods (self-refinement, multi-agent frameworks).",
+        "baseline_names": [
+          "AlphaCode",
+          "Incoder",
+          "CodeGeeX",
+          "StarCoder",
+          "CodeLlama",
+          "Llama3",
+          "CodeGen-Mono",
+          "CodeX",
+          "CodeX+CodeT",
+          "GPT-3.5-turbo (zero-shot)",
+          "PaLM Coder (zero-shot)",
+          "Claude-instant-1 (zero-shot)",
+          "GPT-4-turbo (zero-shot)",
+          "GPT-4 (zero-shot)",
+          "Few-Shot",
+          "CoT",
+          "ReAct",
+          "Reflexion",
+          "ToT",
+          "RAP",
+          "Self-Edit",
+          "Self-Planing",
+          "Self-Debugging",
+          "INTERVENOR",
+          "CodeCoT",
+          "Self-Collaboration",
+          "ChatDev",
+          "AgentVerse",
+          "MetaGPT"
+        ],
+        "baseline_strength": "Comprehensive, covering a wide range of state-of-the-art and foundational models.",
+        "statistical_significance": "No",
+        "evidence": "To illustrate the effectiveness of AgentCoder, we compare AgentCoder with 12 Large Language Models (LLMs), including open-source and closed-source ones... Additionally, we compare AgentCoder with 16 state-of-the-art (SOTA) code generation methods that are based on LLMs but with various optimisation strategies."
+      },
+      "QQ7_Results_Presentation": {
+        "score": "Yes",
+        "results_format": "Tables (Table 1), Text, Figures (Figure 1 shows example inputs/outputs)",
+        "clarity": "Clear and well-structured, easy to understand.",
+        "conclusion_support": "Yes, results directly support the claims of AgentCoder's superiority.",
+        "key_findings": "Clearly summarized in the abstract, introduction, and RQ2 section.",
+        "evidence": "As shown in Tab. 1, we can observe that AgentCoder outpeforms all the base LLM models and all the baseline optimisation approaches in all the datasets... For example, AgentCoder (GPT-4) achieves 96.3% and 91.8% pass@1 in HumanEval and MBPP datasets with an overall token overhead of 56.9K and 66.3K..."
+      },
+      "QQ8_LLM_Integration": {
+        "score": "Yes",
+        "llm_role": "Core component for Programmer and Test Designer agents.",
+        "llm_models_used": [
+          "GPT-4",
+          "GPT-4-turbo",
+          "GPT-3.5-turbo",
+          "PaLM Coder",
+          "Claude-instant-1"
+        ],
+        "input_structure": "Inputs to LLMs are coding requirements, error messages from Test Executor agent.",
+        "output_structure": "Outputs from LLMs are code snippets, test cases.",
+        "prompt_engineering_details": "Mentioned 'Chain-of-Thought approach' for programmer agent and 'carefully designed prompts' for test designer agent (prompts in Appendix A.3).",
+        "fine_tuning_details": "No",
+        "llm_limitations_addressed": "Addresses the issue of LLMs generating biased tests by separating test generation from code generation, and tackles excessive token overhead of existing multi-agent systems.",
+        "evidence": "The programmer agent is powered by LLMs... the programmer agent employs a Chain-of-Thought approach... The test designer agent is also powered by LLMs. We carefully designed the prompts for the test designer agent... AgentCoder generates tests independently without seeing the whole code snippet to keep objectivity and avoid being biased... AgentCoder streamlines the multi-agent collaboration by utilizing only three agents... significantly reduces the token overhead..."
+      },
+      "QQ9_Research_Contribution": {
+        "score": "Yes",
+        "contribution_types": [
+          "Methodological",
+          "Empirical",
+          "Practical"
+        ],
+        "novelty_level": "Incremental (novel architecture combining existing ideas for improved performance)",
+        "theoretical_contribution": "Partial (implicit contribution to understanding multi-agent collaboration in LLM-based code generation)",
+        "practical_contribution": "Significant (demonstrates higher code correctness, better test accuracy, and lower token overhead)",
+        "significance_for_field": "Significant for LLM-based code generation and multi-agent systems.",
+        "evidence": "Our main contributions are as follows: • We propose AgentCoder, a multi-agent framework for code generation with effective test generation and small token overhead. AgentCoder contains three distinct agents... • We conduct an extensive evaluation... which demonstrates that AgentCoder outperforms all the baselines... • We conduct a deep analysis of our results and ablation studies, which demonstrate the contribution of different agents, the effectiveness of the tests generated by the test designer agent, and the necessity of using separate agents for code generation and test case design."
+      },
+      "QQ10_Limitations_Discussion": {
+        "score": "No",
+        "limitations_section": "No",
+        "limitations_categories": {
+          "dataset_limitations": [],
+          "methodology_limitations": [],
+          "llm_specific_limitations": [
+            "Bias in test generation when code and tests generated by same model",
+            "Excessive token overhead in existing multi-agent frameworks"
+          ],
+          "generalizability_limitations": [],
+          "evaluation_limitations": []
+        },
+        "limitations_analysis_depth": "Surface-level, mostly serves as motivation for proposed solution, not a dedicated critical analysis of AgentCoder's own limitations.",
+        "threats_to_validity_categories": {
+          "internal_validity": "No",
+          "external_validity": "No",
+          "construct_validity": "No",
+          "conclusion_validity": "No"
+        },
+        "evidence": "Nevertheless, these methods have two limitations: 1) they have less effective feedback mechanism... 2) they involve an excessive number of agents... Different from existing methods, AgentCoder generates tests independently without seeing the whole code snippet... This trade-off scenario occurs due to the model’s limited resources and its focus on optimizing one aspect of the code generation process, which might inadvertently compromise the quality of other tasks [8, 41]."
+      },
+      "QQ11_Future_Work": {
+        "score": "No",
+        "future_work_section": "No",
+        "future_work_categories": [],
+        "research_directions": [],
+        "implementation_suggestions": [],
+        "short_term_opportunities": [],
+        "long_term_vision": "",
+        "evidence": "The provided text does not contain a dedicated 'Future Work' section or explicit suggestions for future research directions within other sections."
+      },
+      "QQ12_Input_Output_Definition": {
+        "score": "Yes",
+        "input_definition_clarity": "Clear",
+        "input_formats_described": [
+          "Code generation requirements/descriptions (natural language)",
+          "Error messages (from local environment/terminal)"
+        ],
+        "output_definition_clarity": "Clear",
+        "output_formats_described": [
+          "Code snippets (Python)",
+          "Test cases (Python assertions)",
+          "Error feedback/messages"
+        ],
+        "transformation_process_clarity": "Clear, described as an iterative loop between agents and local environment.",
+        "examples_provided": "Yes (Figure 1 shows an example flow with specific code, test cases, and error messages).",
+        "edge_cases_discussed": "Yes, test designer agent is explicitly designed to generate edge test cases.",
+        "evidence": "The process begins by inputting tasks/code generation requirements/descriptions into the code generation agent... If the execution results contain error information (e.g., syntax errors), the test executor agent will then return the error information to the programmer agent... Figure 1: Pipeline of AgentCoder with a code generation example from HumanEval (showing code, test cases, and error feedback)... The test designer agent... (ii) to cover edge test cases..."
+      }
+    }
+  },
+  "metadata": {
+    "assessed_at": "2025-07-04 14:36:22"
+  }
+}
